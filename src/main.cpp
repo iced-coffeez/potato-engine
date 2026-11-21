@@ -99,7 +99,7 @@ int main() {
 
 	add_collider(&floorC); */
 
-	// list_collider_memory_aidk whyddresses();
+	// list_collider_memory_addresses();
 	
 	UpdateCamera(&camera, CAMERA_FREE);
 	
@@ -107,7 +107,6 @@ int main() {
 		if (IsKeyPressed(KEY_F4)) {
 			ToggleFullscreen();
 		}
-
 		//move_check(&camera);
 		
 		//UpdateCamera(&camera, CAMERA_FREE);
@@ -135,7 +134,7 @@ int main() {
 		// DrawRectangle((x - 25), 0, (FS + 8), textwidth, DARKGRAY);
 
 		// DrawRectangle((x - 12.25), 0, textwidth, (FS + 4), DARKGRAY);
-idk why
+
 		DrawTextEx(font, title, Vector2{ x, 0 }, FS, 0, RAYWHITE);
 
 		DrawText(TextFormat("%f",camera.position.y), 0, 0, 16, RAYWHITE);
