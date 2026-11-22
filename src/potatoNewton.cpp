@@ -1,4 +1,5 @@
 #include "potatoNewton.hpp"
+#include "rcamera.h"
 
 static Vector3 velocity = { 0.0f };
 
@@ -7,6 +8,10 @@ static std::vector<CollisionBox*> colBoxes;
 static Vector3 oldPos = { 0.0f };
 
 static bool twosies = false;
+
+bool typeOfMove = false;
+
+bool justToggled;
 
 std::vector<CollisionBox*> check_collisions(Vector3 objectPos) {
 	std::vector<CollisionBox*> hits;
@@ -69,6 +74,10 @@ std::vector<CollisionBox*> check_collisions(Vector3 objectPos) {
 }
 
 void move_check(Camera3D *camera) {
+	if (IsKeyPressed(KEY_F1)) { // Start/stop physics simulation
+		typeOfMove = false;
+	}
+
 	if (camera == nullptr) return;
 
 	oldPos = (*camera).position;
@@ -195,7 +204,9 @@ void move_check(Camera3D *camera) {
 	// 
 	// i need to do mouse crap early
 	float sensitivity = 0.1f;
-	Vector2 md = GetMouseDelta();
+	Vector2 md = justToggled ? Vector2{ 0,0 } : GetMouseDelta();
+
+	if (justToggled) {justToggled = false;}
 
 	Vector3 rotation = {
 		md.x * sensitivity,
@@ -284,5 +295,42 @@ void unload_collider(CollisionBox *object) {
 
 	if (it != colBoxes.end()) {
 		colBoxes.erase(it);
+	}
+}
+
+void freecam_loop(Camera3D *camera) {
+	if (IsKeyPressed(KEY_F1)) { // Start/stop physics simulation
+		typeOfMove = true;
+	}
+
+	float dt = GetFrameTime();
+	Vector3 movement = { 0.0f, 0.0f, 0.0f };
+
+	float sensitivity = 0.1f;
+	Vector2 md = justToggled ? Vector2{ 0,0 } : GetMouseDelta();
+	justToggled = false;
+
+	Vector3 rotation = {
+		md.x * sensitivity,
+		md.y * sensitivity,
+		0.0f
+	};
+
+	UpdateCameraPro(camera, movement, rotation, 0);
+
+	if (IsKeyDown(KEY_W)) {
+		CameraMoveForward(camera, 1, false);
+	} else if (IsKeyDown(KEY_S)) {
+		CameraMoveForward(camera, -1, false);
+	} if (IsKeyDown(KEY_D)) {
+		CameraMoveRight(camera, 1, false);
+	} else if (IsKeyDown(KEY_A)) {
+		CameraMoveRight(camera, -1, false);
+	}
+
+	if (IsKeyDown(KEY_SPACE)) {
+		CameraMoveUp(camera, 0.75);
+	} else if (IsKeyDown(KEY_LEFT_CONTROL)) {
+		CameraMoveUp(camera, -1);
 	}
 }

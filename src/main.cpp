@@ -6,16 +6,27 @@
 int main() {
 	SetConfigFlags(FLAG_VSYNC_HINT);
 
+	Vector2 keptMousePos = { 0 };
+
 	init_obj();
 
-	InitWindow(GetMonitorWidth(GetCurrentMonitor()) / 1.5, GetMonitorHeight(GetCurrentMonitor()) / 1.5, "potato engine");
+	typeOfMove = false;
+
+	bool movestopper = false;
+
+	InitWindow(GetMonitorWidth(GetCurrentMonitor()) / 2, GetMonitorHeight(GetCurrentMonitor()) / 2, "potato engine");
 	SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
 
-	if (!IsWindowFullscreen()) {
+	SetWindowPosition((GetMonitorWidth(GetCurrentMonitor())) / 4, GetMonitorHeight(GetCurrentMonitor()) / 4);
+
+	SetExitKey(KEY_NULL);
+
+	if (IsWindowFullscreen()) {
 		ToggleFullscreen();
 	}
 
-	//DisableCursor();
+
+	DisableCursor();
 
 	Font font = LoadFont("fonts/Opsilon-Regular.ttf");
 
@@ -105,11 +116,33 @@ int main() {
 	
 	while(!WindowShouldClose()) {
 		if (IsKeyPressed(KEY_F4)) {
-			ToggleFullscreen();
+			ToggleBorderlessWindowed();
+		}
+
+		if (IsKeyPressed(KEY_ESCAPE)) {
+			movestopper = true;
+			justToggled = true;
+			EnableCursor();
+			SetMousePosition((int)keptMousePos.x, (int)keptMousePos.y);
+		}
+
+		if (IsMouseButtonPressed(0) && movestopper) {
+			movestopper = false;
+			justToggled = true;
+			keptMousePos = GetMousePosition();
+			DisableCursor();
+		}
+
+		if (!movestopper) {
+			if (typeOfMove) {
+				move_check(&camera);
+			} else {
+				freecam_loop(&camera);
+			}
 		}
 		//move_check(&camera);
 		
-		//UpdateCamera(&camera, CAMERA_FREE);
+		// UpdateCamera(&camera, CAMERA_FREE);
 		
 		BeginDrawing();
 		ClearBackground(BLACK);
